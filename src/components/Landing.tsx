@@ -1,5 +1,13 @@
 import type { CSSProperties } from 'react';
 
+const roadmap = [
+  { date: 'SEP – OCT 2026', title: 'Foundation', status: 'Current focus', description: 'Bring the community together. Refine on-chain check-ins, welcome early testers, and shape Holon around real needs.' },
+  { date: 'NOV – DEC 2026', title: 'Personal Ontology', status: 'Planned', description: 'Connect your concepts, experiences, and relationships. Explore a private alpha with personal data imports and answers grounded in your sources.' },
+  { date: 'Q1 2027', title: 'Living Memory', status: 'Planned', description: 'Carry meaningful context from one conversation to the next, with memories you can review, correct, and choose to forget.' },
+  { date: 'Q2 2027', title: 'Personal AI Twin', status: 'Planned', description: 'Open the public beta with richer knowledge connections, multilingual conversations, and control over your personal data.' },
+  { date: 'H2 2027', title: 'Connected Holon', status: 'Exploring', description: 'Bring your AI twin into more of your world through connected tools, developer APIs, and an expanding ecosystem.' },
+];
+
 export function Landing({ onCheckin, onMotion, motionLabel }: { onCheckin: () => void; onMotion: () => void; motionLabel: string }) {
   return (<>
 
@@ -7,7 +15,7 @@ export function Landing({ onCheckin, onMotion, motionLabel }: { onCheckin: () =>
   <a className="skip-link" href="#main">Skip to main content</a>
   <header className="site-header">
     <a className="brand" href="#product" aria-label="Holon home"><img className="brand-symbol" src="assets/holon-logo.svg" alt="" width="30" height="30" /><span translate="no">Holon</span></a>
-    <nav className="main-nav" aria-label="Main navigation"><a href="#product" aria-current="location">Product</a><a href="#community">Community</a></nav>
+    <nav className="main-nav" aria-label="Main navigation"><a href="#product" aria-current="location">Product</a><a href="#roadmap">Roadmap</a><a href="#community">Community</a></nav>
     <button className="button checkin-button nav-checkin" data-checkin onClick={onCheckin}><span>Check in</span></button>
   </header>
   <main id="main">
@@ -66,6 +74,25 @@ export function Landing({ onCheckin, onMotion, motionLabel }: { onCheckin: () =>
         <div className="section-divider" aria-hidden="true"></div>
       </section>
     </div>
+
+    <section className="roadmap" id="roadmap" aria-labelledby="roadmap-title">
+      <div className="roadmap-inner">
+        <div className="roadmap-heading reveal">
+          <p className="roadmap-eyebrow">THE ROAD AHEAD</p>
+          <h2 id="roadmap-title">Growing into<br />your personal AI twin.</h2>
+          <p className="roadmap-intro">From the first connection to a world that grows with you.</p>
+        </div>
+        <ol className="roadmap-timeline">
+          {roadmap.map((milestone, index) => <li className="roadmap-step reveal" key={milestone.title} style={{ '--milestone-color': ['#a0ead7', '#9cdddF', '#9dc9ee', '#adbaf0', '#b5a8e9'][index] } as CSSProperties}>
+            {index < roadmap.length - 1 && <span className="roadmap-flow" aria-hidden="true"><i /></span>}
+            <div className="roadmap-date">{milestone.date}</div>
+            <div className="roadmap-milestone"><span className={`roadmap-status${index === 0 ? ' is-current' : ''}`}>{milestone.status}</span><h3>{milestone.title}</h3></div>
+            <p className="roadmap-description">{milestone.description}</p>
+          </li>)}
+        </ol>
+      </div>
+      <div className="section-divider roadmap-divider" aria-hidden="true"></div>
+    </section>
 
     <section className="community" id="community" aria-labelledby="community-title">
       <div className="community-background" aria-hidden="true">

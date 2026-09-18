@@ -8,6 +8,8 @@ export function mountVisuals(getSettings) {
   const root = document.documentElement;
   const story = document.querySelector('.story');
   const community = document.getElementById('community');
+  const roadmap = document.getElementById('roadmap');
+  let roadmapVisible = false;
   const stage = document.querySelector('.visual-stage');
   const canvas = document.getElementById('particle-canvas');
   const spaceCanvas = document.getElementById('space-canvas');
@@ -30,6 +32,7 @@ export function mountVisuals(getSettings) {
     root.classList.toggle('controls-sleeping', reduced.matches || document.hidden || getSettings().paused);
     // The community background keeps moving after the particle stage leaves view.
     root.classList.toggle('community-sleeping', reduced.matches || document.hidden || !communityVisible || getSettings().paused);
+    root.classList.toggle('roadmap-sleeping', reduced.matches || document.hidden || !roadmapVisible || getSettings().paused);
     particles?.setRunning(allowed);
     space?.setReducedMotion(reduced.matches);
     space?.setRunning(!reduced.matches && !document.hidden && !getSettings().paused);
@@ -52,7 +55,7 @@ export function mountVisuals(getSettings) {
     const canvasRect = canvas.getBoundingClientRect();
     stageHeight = canvasRect.height || 1; stageWidth = canvasRect.width || 1; stageLeft = canvasRect.left;
     dividers = dividerElements.map(element => ({element, top: element.getBoundingClientRect().top + scrollY, opacity: -1}));
-    const otherReadingZones = [...document.querySelectorAll('.site-header,.community-layout,.back-top,.footer-meta')].map(element => {
+    const otherReadingZones = [...document.querySelectorAll('.site-header,.roadmap-inner,.community-layout,.back-top,.footer-meta')].map(element => {
       const rect = element.getBoundingClientRect(), fixed = element.classList.contains('site-header');
       const offset = fixed ? 0 : scrollY;
       return {left: rect.left, right: rect.right, top: rect.top + offset, bottom: rect.bottom + offset, fixed};
@@ -114,7 +117,7 @@ export function mountVisuals(getSettings) {
     const textResize = new ResizeObserver(scheduleMeasure);
     sections.forEach(section => textResize.observe(section.querySelector('.hero-heading,.feature-heading')));
     observers.push(textResize);
-    textResize.observe(community); textResize.observe(document.querySelector('.site-footer'));
+    textResize.observe(community); textResize.observe(document.querySelector('.roadmap')); textResize.observe(document.querySelector('.site-footer'));
   }
   document.fonts?.ready.then(() => { if (!abort.signal.aborted) scheduleMeasure(); });
   listen(document, 'visibilitychange', syncMotion);
@@ -138,6 +141,8 @@ export function mountVisuals(getSettings) {
     stageObserver.observe(stage); observers.push(stageObserver);
     const communityObserver = new IntersectionObserver(entries => { communityVisible = entries[0].isIntersecting; syncMotion(); }, {threshold: 0});
     communityObserver.observe(community); observers.push(communityObserver);
+    const roadmapObserver = new IntersectionObserver(entries => { roadmapVisible = entries[0].isIntersecting; syncMotion(); }, {threshold: 0});
+    roadmapObserver.observe(roadmap); observers.push(roadmapObserver);
     const reveal = new IntersectionObserver(entries => {
       entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.remove('is-waiting'); reveal.unobserve(entry.target); } });
     }, {threshold: .1});
@@ -157,7 +162,7 @@ export function mountVisuals(getSettings) {
       });
     }, {rootMargin: '-15% 0px -55% 0px'});
     observers.push(navObserver);
-    ['product','community'].forEach(id => navObserver.observe(document.getElementById(id)));
+    ['product','roadmap','community'].forEach(id => navObserver.observe(document.getElementById(id)));
   }
 
   space = createLingoSpace(spaceCanvas);
@@ -173,7 +178,7 @@ export function mountVisuals(getSettings) {
       abort.abort(); observers.forEach(observer => observer.disconnect());
       cancelAnimationFrame(scrollFrame); cancelAnimationFrame(resizeFrame);
       particles?.destroy(); space?.setRunning(false);
-      root.classList.remove('motion-paused', 'art-sleeping', 'controls-sleeping', 'community-sleeping');
+      root.classList.remove('motion-paused', 'art-sleeping', 'controls-sleeping', 'community-sleeping', 'roadmap-sleeping');
     }
   };
 }
